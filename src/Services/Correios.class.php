@@ -1,8 +1,6 @@
 <?php
 
-namespace ZipCode\Service;
-
-use XMLReader;
+namespace ZipCode\Services;
 
 class Correios
 {
@@ -32,6 +30,7 @@ class Correios
         $result = curl_exec($ch);
         echo curl_error($ch);
         curl_close($ch);
+        
         return utf8_encode($result);
     }
 
@@ -52,7 +51,3 @@ class Correios
         XML;
     }
 }
-
-$correio = new Correios('75710808');
-
-var_dump($correio->fetchData());

@@ -15,7 +15,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "ZipCode\\": "src/"
+            "ZipCode\\": "src/",
+            "Tests\\":"tests/"
         }
     },
     "require": {},
