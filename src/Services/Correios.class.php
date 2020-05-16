@@ -1,6 +1,7 @@
 <?php
 
 namespace ZipCode\Services;
+use SimpleXMLElement;
 
 class Correios
 {
@@ -8,9 +9,9 @@ class Correios
     private $url;
     private $header;
 
-    public function __construct($cep)
+    public function __construct($zipCode)
     {
-        $this->setXml($cep);
+        $this->setXml($zipCode);
         $this->url = 'https://apps.correios.com.br/SigepMasterJPA/AtendeClienteService/AtendeCliente';
         $this->header = array('text/xml;charset=UTF-8', 'cache-control:no-cache');
     }
@@ -28,14 +29,13 @@ class Correios
         curl_setopt($ch, CURLOPT_HTTPHEADER, $this->header);
 
         $result = curl_exec($ch);
-        echo curl_error($ch);
         curl_close($ch);
         
-        return utf8_encode($result);
+        return $this->parseStringAsXmlObject(utf8_encode($result));
     }
 
 
-    private function setXml($cep)
+    private function setXml($zipCode)
     {
         $this->xml = <<<XML
         <?xml version='1.0'?>
@@ -44,10 +44,18 @@ class Correios
           <soapenv:Header/>
           <soapenv:Body>
             <cli:consultaCEP>
-              <cep>{$cep}</cep>
+              <cep>{$zipCode}</cep>
             </cli:consultaCEP>
           </soapenv:Body>
         </soapenv:Envelope>
         XML;
+    }
+
+    private function parseStringAsXmlObject($xmlString) : SimpleXMLElement
+    {
+        $clean_xml = str_ireplace(['SOAP-ENV:', 'SOAP:','NS2:'], '', $xmlString);
+        $xml       = simplexml_load_string($clean_xml);
+
+        return $xml->Body->consultaCEPResponse->return;
     }
 }
