@@ -4,8 +4,6 @@ namespace ZipCode;
 
 use ZipCode\Services\Correios;
 
-//include_once('./Services/Correios.class.php');
-
 class ZipCodeSearcher 
 {
     private $city;
