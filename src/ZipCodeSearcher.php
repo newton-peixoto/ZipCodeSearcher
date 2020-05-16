@@ -2,6 +2,7 @@
 
 namespace ZipCode;
 
+require_once __DIR__ . '/../vendor/autoload.php';
 use ZipCode\Services\Correios;
 
 class ZipCodeSearcher 
