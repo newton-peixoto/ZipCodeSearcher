@@ -34,7 +34,7 @@ class Correios
         curl_close($ch);
         $result = utf8_encode($result);
 
-        return $this->parseStringAsXmlObject($result, $httpCode);
+        return $this->parseStringAsArray($result, $httpCode);
     }
 
 
@@ -54,15 +54,25 @@ class Correios
         XML;
     }
 
-    private function parseStringAsXmlObject($xmlString, $httpCode): SimpleXMLElement
+    private function parseStringAsArray($xmlString, $httpCode)
     {
         $clean_xml = str_ireplace(['SOAP-ENV:', 'SOAP:', 'NS2:'], '', $xmlString);
         $xml       = simplexml_load_string($clean_xml);
 
+        return $this->addStatusField($xml, $httpCode);
+    }
+
+    private function addStatusField($xml, $httpCode)
+    {
         if ($httpCode == 200) {
-            return $xml->Body->consultaCEPResponse->return;
+            $xml->Body->consultaCEPResponse->return->addChild('status');
+            $xml->Body->consultaCEPResponse->return->status = $httpCode;
+
+            return (array) $xml->Body->consultaCEPResponse->return;
         } else {
-            return $xml->Body->Fault;
+            $xml->Body->Fault->addChild('status');
+            $xml->Body->Fault->status = $httpCode;
+            return (array)  $xml->Body->Fault;
         }
     }
 }

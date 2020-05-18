@@ -22,11 +22,11 @@ class ZipCodeSearcher
     private function setFieldsValues($xml): void
     {
         $this->address = new Address(
-            $xml->status,
-            $xml->end ?? null,
-            $xml->cidade ?? null,
-            $xml->uf     ?? null,
-            $xml->bairro ?? null
+            $xml['status'],
+            $xml['end'] ?? null,
+            $xml['cidade'] ?? null,
+            $xml['uf']     ?? null,
+            $xml['bairro'] ?? null
         );
     }
 
@@ -44,4 +44,4 @@ class ZipCodeSearcher
 
 $x = new ZipCodeSearcher(75710808);
 
-echo $x->address;
+echo $x->address->status;
