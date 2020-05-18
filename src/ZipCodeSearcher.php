@@ -44,4 +44,4 @@ class ZipCodeSearcher
 
 $x = new ZipCodeSearcher(75710808);
 
-echo $x->address->status;
+echo $x->address;
