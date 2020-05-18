@@ -1,6 +1,7 @@
 <?php
 
 namespace ZipCode\Services;
+
 use SimpleXMLElement;
 
 class Correios
@@ -31,8 +32,9 @@ class Correios
         $result = curl_exec($ch);
         $httpCode = curl_getinfo($ch)['http_code'];
         curl_close($ch);
-        
-        return $this->parseStringAsXmlObject(utf8_encode($result), $httpCode);
+        $result = utf8_encode($result);
+
+        return $this->parseStringAsXmlObject($result, $httpCode);
     }
 
 
@@ -52,21 +54,15 @@ class Correios
         XML;
     }
 
-    private function parseStringAsXmlObject($xmlString, $httpCode) : SimpleXMLElement
+    private function parseStringAsXmlObject($xmlString, $httpCode): SimpleXMLElement
     {
-      $clean_xml = str_ireplace(['SOAP-ENV:', 'SOAP:','NS2:'], '', $xmlString);
-      $xml       = simplexml_load_string($clean_xml);
-      
-      this->
+        $clean_xml = str_ireplace(['SOAP-ENV:', 'SOAP:', 'NS2:'], '', $xmlString);
+        $xml       = simplexml_load_string($clean_xml);
 
-      $xml->Body->consultaCEPResponse->return->addChild('status');
-      $xml->Body->Fault->addChild('status');
-
-
-      if($httpCode == 200){
-        return $xml->Body->consultaCEPResponse->return;
-      }else {
-        return $xml->Body->Fault;
-      }
+        if ($httpCode == 200) {
+            return $xml->Body->consultaCEPResponse->return;
+        } else {
+            return $xml->Body->Fault;
+        }
     }
 }

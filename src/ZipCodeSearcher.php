@@ -1,52 +1,47 @@
-<?php 
+<?php
 
 namespace ZipCode;
 
 require_once __DIR__ . '/../vendor/autoload.php';
+
+use stdClass;
+use ZipCode\Models\Address;
 use ZipCode\Services\Correios;
 
-class ZipCodeSearcher 
+class ZipCodeSearcher
 {
-    private $city;
-    private $correio;
-    private $neighborhood;
-    private $street;
-    private $state;
+    private $address;
 
-    public function find(int $zipCode)
+    function __construct(int $zipCode)
     {
         $this->correio = new Correios($zipCode);
         $xmlResponse = $this->correio->fetchData();
         $this->setFieldsValues($xmlResponse);
-
-        return $this->getFields();
     }
 
-    private function setFieldsValues($xml) : void 
+    private function setFieldsValues($xml): void
     {
-        $this->city         = $xml->cidade ?? null;
-        $this->neighborhood = $xml->bairro ?? null;
-        $this->street       = $xml->end    ?? null;
-        $this->state        = $xml->uf     ?? null;
-        $this->status       = $xml->faultstring ?? ''
-    } 
+        $this->address = new Address(
+            $xml->status,
+            $xml->end ?? null,
+            $xml->cidade ?? null,
+            $xml->uf     ?? null,
+            $xml->bairro ?? null
+        );
+    }
 
-    public function getFields() : object 
-    {    
-        $fields = 
-                [
-                'street'       => $this->street,
-                'city'         => $this->city,
-                'state'        => $this->state,
-                'neighborhood' => $this->neighborhood
-                ];
+    public function getAddress()
+    {
+        return $this->address;
+    }
 
-        return (object) $fields;
-    } 
+    public function __get(string $attributeName)
+    {
+        $method = 'get' . ucfirst($attributeName);
+        return $this->$method();
+    }
 }
 
-$x = new ZipCodeSearcher();
+$x = new ZipCodeSearcher(75710808);
 
-$object = $x->find(75712488);
-
-echo $object->street;
+echo $x->address;
