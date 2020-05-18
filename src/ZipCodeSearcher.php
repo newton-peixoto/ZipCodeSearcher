@@ -24,10 +24,11 @@ class ZipCodeSearcher
 
     private function setFieldsValues($xml) : void 
     {
-        $this->city         = $xml->cidade;
-        $this->neighborhood = $xml->bairro;
-        $this->street       = $xml->end;
-        $this->state        = $xml->uf;
+        $this->city         = $xml->cidade ?? null;
+        $this->neighborhood = $xml->bairro ?? null;
+        $this->street       = $xml->end    ?? null;
+        $this->state        = $xml->uf     ?? null;
+        $this->status       = $xml->faultstring ?? ''
     } 
 
     public function getFields() : object 
@@ -46,6 +47,6 @@ class ZipCodeSearcher
 
 $x = new ZipCodeSearcher();
 
-$object = $x->find(75712480);
+$object = $x->find(75712488);
 
 echo $object->street;
