@@ -2,8 +2,6 @@
 
 namespace ZipCode\Services;
 
-use SimpleXMLElement;
-
 class Correios
 {
     private $xml;
@@ -36,7 +34,6 @@ class Correios
 
         return $this->parseStringAsArray($result, $httpCode);
     }
-
 
     private function setXml($zipCode)
     {

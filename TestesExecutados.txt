@@ -1,0 +1,9 @@
+Correios (Tests\Services\Correios)
+ [x] Must return http 200 if zip code is valid
+ [x] Must return http 500 if zip code is invalid
+ [x] Return of fetch data must be an array
+
+Zip Code Searcher (Tests\Services\ZipCodeSearcher)
+ [x] Adress attribute must be an instance of model adress
+ [x] Correio attribute must be an instance of correios service
+
