@@ -24,63 +24,19 @@ class Address
         $this->neighborhood = $neighborhood;
     }
 
-    //get
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    public function getStreet()
-    {
-        return $this->street;
-    }
-
-    public function getCity()
-    {
-        return $this->city;
-    }
-
-    public function getState()
-    {
-        return $this->state;
-    }
-
-    public function getNeighborhood()
-    {
-        return $this->neighborhood;
-    }
-
-    //set
-    public function setStatus($status)
-    {
-        $this->$status = $status;
-    }
-
-    public function setStreet($street)
-    {
-        $this->$street = $street;
-    }
-
-    public function setCity($city)
-    {
-        $this->$city = $city;
-    }
-
-    public function setState($state)
-    {
-        $this->$state = $state;
-    }
-
-    public function setNeighborhood($neighborhood)
-    {
-        $this->$neighborhood = $neighborhood;
-    }
-
     //magic
-    public function __get(string $attributeName)
+    public function __get($property)
     {
-        $method = 'get' . ucfirst($attributeName);
-        return $this->$method();
+        if (property_exists($this, $property)) {
+            return $this->$property;
+        }
+    }
+
+    public function __set($property, $value)
+    {
+        if (property_exists($this, $property)) {
+            $this->$property = $value;
+        }
     }
 
     public function __toString()
