@@ -10,7 +10,7 @@ class Address
     private $state;
     private $neighborhood;
 
-    function __construct(
+    public function setAttributes(
         $status,
         $street,
         $city,

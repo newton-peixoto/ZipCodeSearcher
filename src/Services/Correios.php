@@ -2,26 +2,36 @@
 
 namespace ZipCode\Services;
 
-class Correios
+use ZipCode\Contracts\ZipCodeServicesContract;
+use ZipCode\Models\Address;
+
+class Correios implements ZipCodeServicesContract
 {
     private $xml;
     private $url;
     private $header;
 
-    public function __construct($zipCode)
+    public function __construct()
     {
-        $this->setXml($zipCode);
         $this->url = 'https://apps.correios.com.br/SigepMasterJPA/AtendeClienteService/AtendeCliente';
         $this->header = array('text/xml;charset=UTF-8', 'cache-control:no-cache');
+        $this->address = new Address;
     }
 
-    public function fetchData()
+    public function fetchData($zipCode): Address
     {
+        $this->setXml($zipCode);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6");
+
+        curl_setopt(
+            $ch,
+            CURLOPT_USERAGENT,
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6"
+        );
+
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $this->xml);
@@ -32,7 +42,16 @@ class Correios
         curl_close($ch);
         $result = utf8_encode($result);
 
-        return $this->parseStringAsArray($result, $httpCode);
+        $xml = $this->parseStringAsArray($result, $httpCode);
+        $this->address->setAttributes(
+            $xml['status'],
+            $xml['end'] ?? null,
+            $xml['cidade'] ?? null,
+            $xml['uf']     ?? null,
+            $xml['bairro'] ?? null
+        );
+
+        return $this->address;
     }
 
     private function setXml($zipCode)

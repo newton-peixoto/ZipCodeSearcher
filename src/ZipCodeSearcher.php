@@ -2,47 +2,29 @@
 
 namespace ZipCode;
 
-require_once __DIR__ . '/../vendor/autoload.php';
-
+use ZipCode\Contracts\ZipCodeServicesContract;
 use ZipCode\Models\Address;
-use ZipCode\Services\Correios;
+
 
 class ZipCodeSearcher
 {
     private $address;
-    private $correio;
+    private $zipCodeService;
 
-    function __construct($zipCode)
+    function __construct(ZipCodeServicesContract $zipCodeService)
     {
-        $this->correio = new Correios($zipCode);
-        $xmlResponse = $this->correio->fetchData();
-        $this->setFieldsValues($xmlResponse);
+        $this->zipCodeService = $zipCodeService;
     }
 
-    private function setFieldsValues($xml): void
+    function find($zipCode)
     {
-        $this->address = new Address(
-            $xml['status'],
-            $xml['end'] ?? null,
-            $xml['cidade'] ?? null,
-            $xml['uf']     ?? null,
-            $xml['bairro'] ?? null
-        );
+        $this->address = $this->zipCodeService->fetchData($zipCode);
     }
 
-    public function getAddress()
+    public function __get($property)
     {
-        return $this->address;
-    }
-
-    public function getCorreio()
-    {
-        return $this->correio;
-    }
-
-    public function __get(string $attributeName)
-    {
-        $method = 'get' . ucfirst($attributeName);
-        return $this->$method();
+        if (property_exists($this, $property)) {
+            return $this->$property;
+        }
     }
 }
