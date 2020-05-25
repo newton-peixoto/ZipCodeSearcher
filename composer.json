@@ -1,0 +1,28 @@
+{
+    "name": "newtz/zipcode",
+    "description": "Will allow you to find worldwide address by passing a zipcode",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Newton Peixoto",
+            "email": "newt.peixoto@gmail.com"
+        },
+        {
+            "name": "Breno Campos",
+            "email": "breno23augusto@hotmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ZipCode\\": "src/",
+            "Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "level-2/dice": "^4.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    }
+}
