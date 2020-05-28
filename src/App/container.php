@@ -1,21 +1,16 @@
 <?php
 
-require_once __DIR__ . '../../../vendor/autoload.php';
 
-use Dice\Dice;
-use ZipCode\Contracts\ZipCodeServiceContract;
+use League\Container\Container;
+use ZipCode\Models\Address;
 use ZipCode\Services\Correios;
-use ZipCode\Services\Zippopotamus;
 use ZipCode\ZipCodeSearcher;
 
-$container = new Dice();
+$container = new Container;
 
-$container = $container->addRules([
-    ZipCodeSearcher::class => [
-        'substitutions' => [
-            ZipCodeServiceContract::class => Correios::class
-        ]
-    ]
-]);
+$container->add('ZipCodeService', function () {
+    return  new ZipCodeSearcher(new Correios(new Address));
+});
+
 
 return $container;
