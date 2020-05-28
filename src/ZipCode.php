@@ -4,7 +4,7 @@ namespace ZipCode;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use ZipCode\Contracts\ZipCodeServiceContract;
+use ZipCode\Models\Address;
 use ZipCode\ZipCodeSearcher;
 use ZipCode\Services\Zippopotamus;
 
@@ -12,31 +12,24 @@ class ZipCode
 {
     public static function getSearcher($countryTag = 'BR'): ZipCodeSearcher
     {
-        $dice = require_once __DIR__ . '../../src/App/container.php';
 
-        $dice = self::setService($dice, $countryTag);
-        
-        return $dice->create(ZipCodeSearcher::class);
+        $container = require_once __DIR__ . '../App/container.php';
+        $container = $countryTag != 'BR' ? self::getNewService($container, $countryTag) : $container;
+
+        return $container->get(self::getRightService($countryTag));
     }
 
-    private static function setService($dice, $countryTag)
+    private static function getNewService($container, $countryTag)
     {
+        $container->add('ZipCodeServiceAll', function () use ($countryTag) {
+            return  new ZipCodeSearcher(new Zippopotamus(new Address, $countryTag));
+        });
 
-        switch ($countryTag) {
-            case 'BR':
-                break;
-            default:
-                $dice = $dice->addRules([
-                    ZipCodeSearcher::class => [
-                        'substitutions' => [
-                            ZipCodeServiceContract::class => Zippopotamus::class
-                        ],
-                    ],
-                    Zippopotamus::class => ['constructParams' => [$countryTag]]
-                ]);
-                break;
-        }
+        return $container;
+    }
 
-        return $dice;        
+    private static function getRightService($countryTag)
+    {
+        return $countryTag != 'BR' ?  'ZipCodeServiceAll' : 'ZipCodeService';
     }
 }
